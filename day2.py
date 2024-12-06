@@ -4,11 +4,11 @@ import pandas as pd
 mat=pd.DataFrame([[7, 6, 4, 2, 1],
 [1, 2, 7, 8, 9],
 [9, 7, 6, 2, 1],
-[1, 3, 2, 4, 5],
+[2, 3, 2, 3, 5],
 [8, 6, 4, 4, 1],
 [1, 3, 6, 7, 9]])
 
-mat=pd.read_csv('input_day2.txt',sep=None,names=np.arange(8))
+#mat=pd.read_csv('input_day2.txt',sep=None,names=np.arange(8))
 #print(mat)
 #print(mat.shape[1])
 #print(np.arange(mat.shape[1]))
@@ -32,9 +32,9 @@ df4.columns=np.arange(df4.shape[1])
 #print(df3)
 #print(df4)
 step=df4.sub(df3)
-#print(step)
+print(step)
 allowed_step=[-2,-1,0,1,2,float('NaN')]
 step2=step.isin(allowed_step)
 #print(step2)
 
-#print(step2[step2==True].dropna(ignore_index=True))
+print(step2[step2==True].dropna(ignore_index=True))
