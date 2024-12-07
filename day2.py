@@ -8,7 +8,7 @@ mat=pd.DataFrame([[7, 6, 4, 2, 1],
 [8, 6, 4, 4, 1],
 [1, 3, 6, 7]])
 
-#mat=pd.read_csv('input_day2.txt',sep=None,names=np.arange(8))
+mat=pd.read_csv('input_day2.txt',sep=None,names=np.arange(8))
 #print(mat)
 #print(mat.shape[1])
 #print(np.arange(mat.shape[1]))
@@ -30,19 +30,13 @@ lv_diff_mul=lv_diff_min.mul(lv_diff_max)
 ind_list=lv_diff_mul[lv_diff_mul<=0].index #collecting indices where we should filter out rows
 lv_diff.drop(ind_list,inplace=True) #removing mixed and zero rows
 
-#print(lv_diff)
+lv_diff=lv_diff.abs()
+print(lv_diff)
+allowed_step=[1,2,3,float('NaN')]
+#print(lv_diff.isin(allowed_step))
+lv_allowed=lv_diff.isin(allowed_step)
+print(lv_allowed)
+#print(lv_diff[lv_diff==True].dropna(ignore_index=True))
+lv_allowed=lv_allowed[lv_allowed==True].dropna(ignore_index=True)
 
-#### "2nd derivative: the step of increase or decrease"
-df3=lv_diff.iloc[:,:-1]
-df4=lv_diff.iloc[:,1:]
-df3.columns=np.arange(df3.shape[1])
-df4.columns=np.arange(df4.shape[1])
-#print(df3)
-#print(df4)
-step=df4.sub(df3)
-#print(step)
-allowed_step=[-2,-1,0,1,2,float('NaN')]  #Filtering the allowed values for the 2nd deriv. Here NaN accounts for the levels with less than 8 elements
-step2=step.isin(allowed_step)
-#print(step2)
-
-print(step2[step2==True].dropna(ignore_index=True).shape[0])
+print(lv_allowed.shape[0])
