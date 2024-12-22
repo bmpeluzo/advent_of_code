@@ -96,17 +96,17 @@ lv_diff3_mix.drop(ind_mix_3,inplace=True)  ## lv_diff3_mix now has rows that CAN
 #n_high=lv_diff3_mix_2[lv_diff3_mix_2>3].count(axis=1)
 #lv_diff3_mix.drop(n_high[n_high>0].index,inplace=True)
 
-#print(lv_diff3_mix)
+#print(lv_diff3_mix.shape)
 n_pos=lv_diff3_mix[lv_diff3_mix>0].count(axis=1)
 n_neg=lv_diff3_mix[lv_diff3_mix<0].count(axis=1)
 #print(n_pos)
 #print(n_neg)
 lv_diff3_mix_neg=lv_diff3_mix.drop(n_pos[n_pos>1].index)
-#print(lv_diff3_mix_neg)
+#print(lv_diff3_mix_neg.shape)
 n_neg_2=lv_diff3_mix_neg[lv_diff3_mix_neg<-3].count(axis=1) #number of negative elements <-3 in each row
 lv_diff3_mix_neg.drop(n_neg_2[n_neg_2>=2].index,inplace=True) #drop rows w/ more than 1 element <-3
-print(lv_diff3_mix_neg)
-n_elem=lv_diff3_mix_neg.count(axis=1)
+#print(lv_diff3_mix_neg)
+n_elem_neg=lv_diff3_mix_neg.count(axis=1)
 
 #print(lv_diff3_mix_neg)
 #print(lv_diff3_mix_pos)
@@ -120,54 +120,78 @@ for i in range(lv_diff3_mix_neg.shape[0]): #lv_diff3_mix_neg.index:
         #print(lv_diff3_mix_neg.iloc[i,j])
         if lv_diff3_mix_neg.iloc[i,j]>0:
             if j==0:
-                if lv_diff3_mix_neg.iloc[i,:].min() < -3:
-                    if lv_diff3_mix_neg.iloc[i,:].min()==lv_diff3_mix_neg.iloc[i,j+1]:
-                        if lv_diff3_mix_neg.iloc[i,j+1] + lv_diff3_mix_neg.iloc[i,j] >= -3:
+                if lv_diff3_mix_neg.iloc[i,j+1] < -3:
+                    if lv_diff3_mix_neg.iloc[i,j] + lv_diff3_mix_neg.iloc[i,j+1] >= -3 and lv_diff3_mix_neg.iloc[i,j] + lv_diff3_mix_neg.iloc[i,j+1] < 0:   #check this
+                        ser=lv_diff3_mix_neg.iloc[i,:].drop(index=j+1)
+                        if ser.min()>=-3:
                             n=n+1
                 else:
-                    print(lv_diff3_mix_neg.iloc[i,:])
-                    n=n+1
-"""                     
-#            if lv_diff3_mix_neg.iloc[i,j] + lv_diff3_mix_neg.iloc[i,j+1]
-#            print(lv_diff3_mix_neg.iloc[i,:].min())    #find the lowest element in the row
-            #print(lv_diff3_mix_neg.iloc[i,j])
-            if j==0 or j==n_elem.iloc[i]-1:
-                # test if there's another forbidden element in the row
-                #print(lv_diff3_mix_neg.iloc[i,:])
-                #if j==0
-                ser=lv_diff3_mix_neg.iloc[i,:].drop([j-1,j])
-                #print(ser)
-#                ser.drop([j-1],inplace=True)
-#                print(ser)
-                if ser.min() >= -3:
-                    if lv_diff3_mix_neg.iloc[i,j]+lv_diff3_mix_neg.iloc[i,j-1] >= -3:
-                        print(lv_diff3_mix_neg.iloc[i,:])
-            elif lv_diff3_mix_neg.iloc[i,j] + lv_diff3_mix_neg.iloc[i,j-1] >= -3 and lv_diff3_mix_neg.iloc[i,j] + lv_diff3_mix_neg.iloc[i,j-1] != 0:
-                # test if there's another forbidden element in the row
-                ser=lv_diff3_mix_neg.iloc[i,:].drop([j,j-1])
-                if ser.min() >= -3:
-                    n=n+1
+                    if lv_diff3_mix_neg.iloc[i,:].min() >=-3:
+                        n=n+1
+            elif j>0 and j<n_elem_neg.iloc[i]-1:
+                if lv_diff3_mix_neg.iloc[i,:].min() < -3:
+                    if lv_diff3_mix_neg.iloc[i,:].idxmin()==j+1 or lv_diff3_mix_neg.iloc[i,:].idxmin()==j-1:
+                        if lv_diff3_mix_neg.iloc[i,:].min() + lv_diff3_mix_neg.iloc[i,j] >= -3 and lv_diff3_mix_neg.iloc[i,:].min() + lv_diff3_mix_neg.iloc[i,j] < 0:
+                            ser=lv_diff3_mix_neg.iloc[i,:].drop(lv_diff3_mix_neg.iloc[i,:].idxmin())
+                            if ser.min()>=-3:
+                                n=n+1
+                else:
+                    if (lv_diff3_mix_neg.iloc[i,j] + lv_diff3_mix_neg.iloc[i,j+1] >=-3 and lv_diff3_mix_neg.iloc[i,j] + lv_diff3_mix_neg.iloc[i,j+1] < 0) and (lv_diff3_mix_neg.iloc[i,j] + lv_diff3_mix_neg.iloc[i,j-1] >= -3 and lv_diff3_mix_neg.iloc[i,j] + lv_diff3_mix_neg.iloc[i,j-1] < 0):
+                        n=n+1
+            elif j==n_elem_neg.iloc[i]-1:
+                if lv_diff3_mix_neg.iloc[i,j-1] < -3:
+                    if lv_diff3_mix_neg.iloc[i,j]+lv_diff3_mix_neg.iloc[i,j-1]>=-3 and lv_diff3_mix_neg.iloc[i,j]+lv_diff3_mix_neg.iloc[i,j-1] < 0:
+                        ser=lv_diff3_mix_neg.iloc[i,:].drop(index=j-1)
+                        if ser.min()>=-3:
+                            n=n+1
+                else:
+                    if lv_diff3_mix_neg.iloc[i,:].min() >= -3:
+                        n=n+1
 
+#print(n)
 lv_diff3_mix_pos=lv_diff3_mix.drop(n_neg[n_neg>1].index)
-n_elem_pos=lv_diff3_mix_pos.count(axis=1)
+#print(lv_diff3_mix_pos)
 
+n_pos_2=lv_diff3_mix_pos[lv_diff3_mix_pos>3].count(axis=1) #number of negative elements <-3 in each row
+lv_diff3_mix_pos.drop(n_pos_2[n_pos_2>=2].index,inplace=True) #drop rows w/ more than 1 element <-3
+n_elem_pos=lv_diff3_mix_pos.count(axis=1)
+print(lv_diff3_mix_pos)
 
 for i in range(lv_diff3_mix_pos.shape[0]): #lv_diff3_mix_neg.index:
     for j in range(lv_diff3_mix_pos.shape[1]):
-        #print(lv_diff3_mix_neg.iloc[i,j])
+        #print(lv_diff3_mix_pos.iloc[i,j])
         if lv_diff3_mix_pos.iloc[i,j]<0:
-            #print(lv_diff3_mix_neg.iloc[i,j])
-            if j==0 or j==n_elem_pos.iloc[i]-1:
-                # test if there's another forbidden element in the row
-                ser=lv_diff3_mix_neg.iloc[i,:].drop([j])
-                if ser.max() <= 3:
-                    n=n+1
-            elif lv_diff3_mix_pos.iloc[i,j] + lv_diff3_mix_pos.iloc[i,j-1] <= 3 and lv_diff3_mix_pos.iloc[i,j] + lv_diff3_mix_pos.iloc[i,j-1] != 0:
-                # test if there's another forbidden element in the row
-                ser=lv_diff3_mix_neg.iloc[i,:].drop([j,j-1])
-                if ser.max() <= 3:
-                    n=n+1
-"""
+            if j==0:
+                if lv_diff3_mix_pos.iloc[i,j+1] > 3:
+                    if lv_diff3_mix_pos.iloc[i,j] + lv_diff3_mix_pos.iloc[i,j+1] <= 3 and lv_diff3_mix_pos.iloc[i,j] + lv_diff3_mix_pos.iloc[i,j+1] > 0:   #check this
+                        ser=lv_diff3_mix_pos.iloc[i,:].drop(index=j+1)
+                        if ser.max()<=3:
+                            n=n+1
+                else:
+                    if lv_diff3_mix_pos.iloc[i,:].max() <=3:
+                        n=n+1
+            elif j>0 and j<n_elem_pos.iloc[i]-1:
+                if lv_diff3_mix_pos.iloc[i,:].max() > 3:
+                    if lv_diff3_mix_pos.iloc[i,:].idxmax()==j+1 or lv_diff3_mix_pos.iloc[i,:].idxmax()==j-1:
+                        if lv_diff3_mix_pos.iloc[i,:].max() + lv_diff3_mix_pos.iloc[i,j] <= 3 and lv_diff3_mix_pos.iloc[i,:].max() + lv_diff3_mix_pos.iloc[i,j] > 0:
+                            ser=lv_diff3_mix_pos.iloc[i,:].drop(lv_diff3_mix_pos.iloc[i,:].idxmax())
+                            if ser.max()<=3:
+                                n=n+1
+                else:
+                    if (lv_diff3_mix_pos.iloc[i,j] + lv_diff3_mix_pos.iloc[i,j+1] <=3 and lv_diff3_mix_pos.iloc[i,j] + lv_diff3_mix_pos.iloc[i,j+1] > 0) and (lv_diff3_mix_pos.iloc[i,j] + lv_diff3_mix_pos.iloc[i,j-1] <= 3 and lv_diff3_mix_pos.iloc[i,j] + lv_diff3_mix_pos.iloc[i,j-1] > 0):
+                        n=n+1
+            elif j==n_elem_pos.iloc[i]-1:
+                if lv_diff3_mix_pos.iloc[i,j-1] > 3:
+                    if lv_diff3_mix_pos.iloc[i,j]+lv_diff3_mix_pos.iloc[i,j-1]<=3 and lv_diff3_mix_pos.iloc[i,j]+lv_diff3_mix_pos.iloc[i,j-1] > 0:
+                        ser=lv_diff3_mix_pos.iloc[i,:].drop(index=j-1)
+                        if ser.max()<=3:
+                            n=n+1
+                else:
+                    if lv_diff3_mix_pos.iloc[i,:].max() <= 3:
+                        n=n+1
+print(n)
+
+
 ## pure matrix:
 # get the absolute values to make it easier
 #print(lv_diff3_pure)
@@ -178,9 +202,7 @@ lv_diff3_pure_2.drop(n_high[n_high>1].index,inplace=True)     ## lv_diff3_pure n
 #print(lv_diff3_pure_2)
 n_elem_pure=lv_diff3_pure_2.count(axis=1)
 #print(n_elem_pure)
-#print(lv_diff3_pure)
-#lv_diff3_pure=lv_diff3_pure.abs()
-#print(lv_diff3_pure)
+#print(lv_diff3_pure_2)
 
 n_pure=0
 for i in range(lv_diff3_pure_2.shape[0]):
@@ -196,14 +218,15 @@ for i in range(lv_diff3_pure_2.shape[0]):
             #    ser=lv_diff3_pure.iloc[i,:].drop([j,j+1])
             #    if ser.min() >= 3:
             #        n_pure=n_pure+1
-
+#print(n_pure)
 ## zero matrix:
 #print(lv_diff3_zero)
 n_zero=lv_diff3_zero[lv_diff3_zero==0].count(axis=1) #get the number of zeroes in each col
 #print(n_zero)
 lv_diff3_zero.drop(n_zero[n_zero>1].index,inplace=True)
-#print(lv_diff3_zero)
 lv_diff3_zero=lv_diff3_zero.abs()
+#print(lv_diff3_zero)
+
 n_high=lv_diff3_zero[lv_diff3_zero>3].count(axis=1)
 #print(n_high)
 lv_diff3_zero.drop(n_high[n_high>0].index,inplace=True)
