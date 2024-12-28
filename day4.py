@@ -101,6 +101,44 @@ for row in range(inp.shape[0]):#range(4,5): #range(inp.shape[0]):
                 #print('found xmas') 
     #print(count)    
 
-print(count)
+#print(count)
+
+#### Part 2 #####
+def test_x(row,col,sign1,sign2):
+    flag=None
+    if inp.iloc[row+sign1,col+sign2]=='M':
+        if inp.iloc[row-sign1,col-sign2]=='S':
+            if inp.iloc[row-sign1,col+sign2]=='M':
+                if inp.iloc[row+sign1,col-sign2]=='S':
+                    flag=True
+            elif inp.iloc[row+sign1,col-sign2]=='M':
+                if inp.iloc[row-sign1,col+sign2]=='S':
+                    flag=True
+    return flag
+    
+
+
+
+count=0
+for row in range(1,inp.shape[0]-1):#range(4,5): #range(inp.shape[0]):
+    #print('row number %d' %row)
+    a_list=inp[inp.iloc[row,:]=='A'].index.tolist() ## indeces of a occurrances
+    for col in a_list:
+        #print('occurance %d' %col)
+        #if (col+1) <= inp.shape[1]-1 and (col-1) >=0 and (row+1) <= inp.shape[0]-1 and (row-1) >=0: #test diagonal + +
+        if (col+1) <= inp.shape[1]-1 and (col-1) >= 0:
+            #print(col,row)
+            #print('diagonal + +')
+            for i in [-1,1]:
+                for j in [-1,1]:
+                    #print(i,j)
+                    if test_x(row,col,sign1=i,sign2=j)==True:
+                        #print(row,col)
+                        #print(i,j)
+                        count=count+1
+
+            
+                    
+print(count/2)
 
 #print(inp[inp.loc[:,:]=='X'].index.tolist())
